@@ -1,0 +1,621 @@
+[
+  {
+    "id": "modern-tropical-house-with-pool",
+    "title": "Modern Tropical House with Pool",
+    "listing": "sale",
+    "type": "house-lot",
+    "price": 15500000,
+    "location": "Baan Riverside",
+    "beds": 4,
+    "baths": 5,
+    "sqm": 450,
+    "lot": 600,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Butuan property listing",
+    "tag": "Lot: 600 sqm",
+    "note": null,
+    "features": [
+      "Pool",
+      "Garage",
+      "Garden"
+    ],
+    "agent": {
+      "name": "Daniel Bantillo",
+      "initials": "DB"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "A two-storey tropical-modern home near the Agusan River with an open living area, a lap pool and a landscaped garden. Dummy listing for the midterm demo.",
+    "cta": null
+  },
+  {
+    "id": "libertad-corner-townhouse",
+    "title": "Libertad Corner Townhouse",
+    "listing": "sale",
+    "type": "townhouse",
+    "price": 9800000,
+    "location": "Libertad",
+    "beds": 3,
+    "baths": 3,
+    "sqm": 142,
+    "lot": null,
+    "stage": "pre-selling",
+    "status": "available",
+    "hoa": 0,
+    "development": true,
+    "badge": "Pre-selling",
+    "tag": "Corner Unit",
+    "note": null,
+    "features": [
+      "2 Slots",
+      "Corner lot",
+      "Carport"
+    ],
+    "agent": {
+      "name": "Anthony Adlawon",
+      "initials": "AA"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Corner townhouse with extra side space and a two-car carport. Turnover is scheduled for a later phase.",
+    "cta": null
+  },
+  {
+    "id": "uptown-butuan-2br-condominium",
+    "title": "Uptown Butuan 2BR Condominium",
+    "listing": "sale",
+    "type": "condominium",
+    "price": 8500000,
+    "location": "Villa Kananga",
+    "beds": 2,
+    "baths": 2,
+    "sqm": 105,
+    "lot": null,
+    "stage": "rfo",
+    "status": "available",
+    "hoa": 95,
+    "development": false,
+    "badge": "Ready for Occupancy",
+    "tag": "₱81k / sqm",
+    "note": null,
+    "features": [
+      "1 Slot",
+      "Balcony",
+      "Gym access"
+    ],
+    "agent": {
+      "name": "Anthony Adlawon",
+      "initials": "AA"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Ready-for-occupancy two-bedroom unit with a balcony, good natural light and access to building amenities.",
+    "cta": null
+  },
+  {
+    "id": "bancasi-city-view-studio",
+    "title": "Bancasi City View Studio",
+    "listing": "sale",
+    "type": "condominium",
+    "price": 4950000,
+    "location": "Bancasi",
+    "beds": 0,
+    "baths": 1,
+    "sqm": 28,
+    "lot": null,
+    "stage": "rfo",
+    "status": "reserved",
+    "hoa": 110,
+    "development": false,
+    "badge": "Butuan property listing",
+    "tag": "₱176k / sqm",
+    "note": null,
+    "features": [
+      "Smart Home",
+      "City view",
+      "Furnished"
+    ],
+    "agent": {
+      "name": "Ace Nathaniel Magbanua",
+      "initials": "AM"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Compact studio with a city view and smart-home basics, good for a starter owner or an investor.",
+    "cta": "Join Waitlist"
+  },
+  {
+    "id": "villa-kananga-furnished-home",
+    "title": "Villa Kananga Furnished Home",
+    "listing": "rent",
+    "type": "house-lot",
+    "price": 48000,
+    "location": "Baan Riverside",
+    "beds": 2,
+    "baths": 2,
+    "sqm": 118,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Includes 1 Parking",
+    "tag": "Furnished",
+    "note": null,
+    "features": [
+      "High Zone",
+      "Parking",
+      "Furnished"
+    ],
+    "agent": {
+      "name": "Daniel Bantillo",
+      "initials": "DB"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Fully furnished two-bedroom home in a gated area. One parking slot is included in the monthly rate.",
+    "cta": null
+  },
+  {
+    "id": "downtown-butuan-executive-loft",
+    "title": "Downtown Butuan Executive Loft",
+    "listing": "rent",
+    "type": "condominium",
+    "price": 38000,
+    "location": "J.C. Aquino Avenue",
+    "beds": 1,
+    "baths": 1.5,
+    "sqm": 78,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Furnished Loft",
+    "tag": "Min 1 Year",
+    "note": null,
+    "features": [
+      "Balcony",
+      "Loft",
+      "Near malls"
+    ],
+    "agent": {
+      "name": "John Mark Lugsanay",
+      "initials": "JL"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Double-height loft along J.C. Aquino Avenue with a balcony and a work corner. Minimum lease of one year.",
+    "cta": null
+  },
+  {
+    "id": "ampayon-pre-selling-house-and-lot",
+    "title": "Ampayon Pre-selling House & Lot",
+    "listing": "sale",
+    "type": "house-lot",
+    "price": 3200000,
+    "location": "Ampayon",
+    "beds": 3,
+    "baths": 2,
+    "sqm": 68,
+    "lot": 110,
+    "stage": "pre-selling",
+    "status": "available",
+    "hoa": 0,
+    "development": true,
+    "badge": "Pre-selling",
+    "tag": "Lot: 110 sqm",
+    "note": null,
+    "features": [
+      "Carport",
+      "Fence"
+    ],
+    "agent": {
+      "name": "Anthony Adlawon",
+      "initials": "AA"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Starter single-attached house in a new Ampayon development, open for pre-selling reservations.",
+    "cta": null
+  },
+  {
+    "id": "taguibo-starter-rowhouse",
+    "title": "Taguibo Starter Rowhouse",
+    "listing": "sale",
+    "type": "townhouse",
+    "price": 1850000,
+    "location": "Taguibo",
+    "beds": 2,
+    "baths": 1,
+    "sqm": 38,
+    "lot": null,
+    "stage": "pre-selling",
+    "status": "available",
+    "hoa": 0,
+    "development": true,
+    "badge": "Pre-selling",
+    "tag": "Starter Home",
+    "note": null,
+    "features": [
+      "Near CSU",
+      "Rowhouse"
+    ],
+    "agent": {
+      "name": "Ace Nathaniel Magbanua",
+      "initials": "AM"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Affordable rowhouse near Caraga State University, suited for small families and student rentals.",
+    "cta": null
+  },
+  {
+    "id": "jc-aquino-commercial-building",
+    "title": "J.C. Aquino Commercial Building",
+    "listing": "sale",
+    "type": "commercial",
+    "price": 24000000,
+    "location": "J.C. Aquino Avenue",
+    "beds": 0,
+    "baths": 2,
+    "sqm": 220,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Commercial",
+    "tag": "Prime Road Lot",
+    "note": null,
+    "features": [
+      "Parking",
+      "Street frontage"
+    ],
+    "agent": {
+      "name": "Daniel Bantillo",
+      "initials": "DB"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Two-floor commercial building on the main avenue, ready for retail or office use.",
+    "cta": null
+  },
+  {
+    "id": "langihan-retail-shophouse",
+    "title": "Langihan Retail Shophouse",
+    "listing": "rent",
+    "type": "commercial",
+    "price": 65000,
+    "location": "Langihan",
+    "beds": 0,
+    "baths": 2,
+    "sqm": 160,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Commercial",
+    "tag": "Ground Floor",
+    "note": null,
+    "features": [
+      "Street frontage",
+      "Storage"
+    ],
+    "agent": {
+      "name": "John Mark Lugsanay",
+      "initials": "JL"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Ground-floor shophouse near the market area with strong foot traffic.",
+    "cta": null
+  },
+  {
+    "id": "doongan-warehouse-lot",
+    "title": "Doongan Warehouse & Lot",
+    "listing": "sale",
+    "type": "commercial",
+    "price": 18500000,
+    "location": "Doongan",
+    "beds": 0,
+    "baths": 1,
+    "sqm": 400,
+    "lot": 800,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Commercial",
+    "tag": "Lot: 800 sqm",
+    "note": null,
+    "features": [
+      "Loading bay",
+      "Truck access"
+    ],
+    "agent": {
+      "name": "Ace Nathaniel Magbanua",
+      "initials": "AM"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Warehouse with truck access and an open floor plan along the highway.",
+    "cta": null
+  },
+  {
+    "id": "ong-yiu-office-floor",
+    "title": "Ong Yiu Office Floor",
+    "listing": "rent",
+    "type": "commercial",
+    "price": 95000,
+    "location": "Ong Yiu",
+    "beds": 0,
+    "baths": 3,
+    "sqm": 180,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 60,
+    "development": false,
+    "badge": "Commercial",
+    "tag": "Min 2 Years",
+    "note": null,
+    "features": [
+      "Parking",
+      "Elevator"
+    ],
+    "agent": {
+      "name": "John Mark Lugsanay",
+      "initials": "JL"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Full office floor with an elevator, parking and a meeting-room layout.",
+    "cta": null
+  },
+  {
+    "id": "libertad-garden-condo-2br",
+    "title": "Libertad Garden Condo 2BR",
+    "listing": "rent",
+    "type": "condominium",
+    "price": 25000,
+    "location": "Libertad",
+    "beds": 2,
+    "baths": 1,
+    "sqm": 52,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Semi-furnished",
+    "tag": "Min 6 Months",
+    "note": null,
+    "features": [
+      "Garden view",
+      "Pet friendly"
+    ],
+    "agent": {
+      "name": "Anthony Adlawon",
+      "initials": "AA"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Two-bedroom unit facing the garden with a semi-furnished layout.",
+    "cta": null
+  },
+  {
+    "id": "villa-kananga-fatima-house",
+    "title": "Villa Kananga Fatima House",
+    "listing": "sale",
+    "type": "house-lot",
+    "price": 11000000,
+    "location": "Villa Kananga",
+    "beds": 5,
+    "baths": 3,
+    "sqm": 120,
+    "lot": 176,
+    "stage": "rfo",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Ready for Occupancy",
+    "tag": "Lot: 176 sqm",
+    "note": null,
+    "features": [
+      "Fully furnished",
+      "Balcony",
+      "2 Slots"
+    ],
+    "agent": {
+      "name": "Daniel Bantillo",
+      "initials": "DB"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Fully furnished two-storey home with a covered balcony, carport and a small garden inside a gated subdivision.",
+    "cta": null
+  },
+  {
+    "id": "agao-townhouse-duplex",
+    "title": "Agao Townhouse Duplex",
+    "listing": "sale",
+    "type": "townhouse",
+    "price": 6400000,
+    "location": "Agao",
+    "beds": 3,
+    "baths": 2,
+    "sqm": 96,
+    "lot": null,
+    "stage": "rfo",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Ready for Occupancy",
+    "tag": "Duplex",
+    "note": null,
+    "features": [
+      "Duplex",
+      "Carport"
+    ],
+    "agent": {
+      "name": "Anthony Adlawon",
+      "initials": "AA"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Ready-to-move-in duplex close to schools and the city proper.",
+    "cta": null
+  },
+  {
+    "id": "bancasi-studio-for-rent",
+    "title": "Bancasi Studio Unit",
+    "listing": "rent",
+    "type": "condominium",
+    "price": 14500,
+    "location": "Bancasi",
+    "beds": 0,
+    "baths": 1,
+    "sqm": 26,
+    "lot": null,
+    "stage": "resale",
+    "status": "available",
+    "hoa": 0,
+    "development": false,
+    "badge": "Furnished",
+    "tag": "Min 6 Months",
+    "note": null,
+    "features": [
+      "Furnished",
+      "Wi-Fi ready"
+    ],
+    "agent": {
+      "name": "Ace Nathaniel Magbanua",
+      "initials": "AM"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Clean studio near the airport road for single professionals.",
+    "cta": null
+  },
+  {
+    "id": "riverside-residences-phase-1",
+    "title": "Riverside Residences Phase 1",
+    "listing": "sale",
+    "type": "condominium",
+    "price": 5600000,
+    "location": "Baan Riverside",
+    "beds": 1,
+    "baths": 1,
+    "sqm": 35,
+    "lot": null,
+    "stage": "pre-selling",
+    "status": "available",
+    "hoa": 100,
+    "development": true,
+    "badge": "Pre-selling",
+    "tag": "New Project",
+    "note": null,
+    "features": [
+      "Pre-selling",
+      "Riverfront"
+    ],
+    "agent": {
+      "name": "Anthony Adlawon",
+      "initials": "AA"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "New riverfront condominium project in its first phase, with turnover planned in a later year.",
+    "cta": null
+  },
+  {
+    "id": "butuan-business-hub-units",
+    "title": "Butuan Business Hub Units",
+    "listing": "sale",
+    "type": "commercial",
+    "price": 12800000,
+    "location": "Bancasi",
+    "beds": 0,
+    "baths": 1,
+    "sqm": 90,
+    "lot": null,
+    "stage": "pre-selling",
+    "status": "available",
+    "hoa": 0,
+    "development": true,
+    "badge": "Pre-selling",
+    "tag": "New Project",
+    "note": null,
+    "features": [
+      "Shell unit",
+      "Parking"
+    ],
+    "agent": {
+      "name": "Ace Nathaniel Magbanua",
+      "initials": "AM"
+    },
+    "images": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&q=80&fm=jpg",
+      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80&fm=jpg"
+    ],
+    "description": "Shell commercial units in a planned business hub along the Bancasi road.",
+    "cta": null
+  }
+]
