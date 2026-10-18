@@ -8,7 +8,22 @@ export default defineNuxtConfig({
 
   experimental: { appManifest: false },
 
-  // GitHub Pages repository subpath
+  routeRules: {
+    '/account': { ssr: false },
+    '/agent': { ssr: false },
+    '/admin': { ssr: false },
+    '/data/**': { static: true }
+  },
+
+  nitro: {
+    prerender: {
+      // Do not fail static generation on query-based search URLs.
+      ignore: ['/**?*']
+    }
+  },
+
+  css: ['~/assets/css/main.css'],
+
   app: {
     baseURL: '/balay-hub/',
 
@@ -24,7 +39,11 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#0b2a4a' }
       ],
       link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/balay-hub/favicon.svg' },
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: '/balay-hub/favicon.svg'
+        },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
@@ -35,14 +54,5 @@ export default defineNuxtConfig({
     },
 
     pageTransition: { name: 'page', mode: 'out-in' }
-  },
-
-  routeRules: {
-    '/account': { ssr: false },
-    '/agent': { ssr: false },
-    '/admin': { ssr: false },
-    '/data/**': { static: true }
-  },
-
-  css: ['~/assets/css/main.css']
+  }
 })
