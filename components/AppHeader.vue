@@ -9,13 +9,19 @@ const menuOpen = ref(false)
 const scrolled = ref(false)
 const root = ref<HTMLElement | null>(null)
 
+const msgs = useMessageStore()
+const face = useFace()
+const unreadMsgs = computed(() => msgs.unread(auth.user))
+const msgLink = computed(() => (auth.user?.role === 'client' ? '/messages' : `/${auth.user?.role}?tab=messages`))
 const isWorkspaceRole = computed(() => auth.user?.role === 'agent' || auth.user?.role === 'admin')
 
 const links = [
-  { to: '/', label: 'Browse Properties' },
+  { to: '/', label: 'Home' },
+  { to: '/browse', label: 'Browse' },
   { to: '/new-developments', label: 'New Developments' },
   { to: '/commercial', label: 'Commercial' },
-  { to: '/for-rent', label: 'For Rent' }
+  { to: '/for-rent', label: 'For Rent' },
+  { to: '/agents', label: 'Find an Agent' }
 ]
 
 const workspaceLinks = computed(() => [
@@ -27,6 +33,9 @@ const workspaceLinks = computed(() => [
 function onScroll() { scrolled.value = window.scrollY > 8 }
 function onDoc(e: MouseEvent) {
   if (root.value && !root.value.contains(e.target as Node)) menuOpen.value = false
+}
+function onDrawerClick(e: MouseEvent) {
+  if ((e.target as HTMLElement).closest('a')) ui.mobileNav = false
 }
 function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { menuOpen.value = false; ui.mobileNav = false } }
 
@@ -40,6 +49,9 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   document.removeEventListener('click', onDoc)
   document.removeEventListener('keydown', onKey)
+  // header unmounts on layout change (e.g. to /login) before the route watcher can close the drawer
+  ui.mobileNav = false
+  document.body.style.overflow = ''
 })
 watch(() => route.fullPath, () => { menuOpen.value = false; ui.mobileNav = false; ui.filterDrawer = false })
 watch(() => ui.mobileNav, v => { if (import.meta.client) document.body.style.overflow = v ? 'hidden' : '' })
@@ -72,15 +84,14 @@ function logout() {
           <NuxtLink class="icon-btn" :to="auth.isLoggedIn ? '/account#saved' : '/login'" aria-label="Saved properties">
             <Icon name="heart" /><span v-if="props.saved.length" class="badge-dot">{{ props.saved.length }}</span>
           </NuxtLink>
-          <NuxtLink class="icon-btn" :to="auth.isLoggedIn ? '/account#inquiries' : '/login'" aria-label="Inquiries">
-            <Icon name="bell" /><span v-if="props.inquiries.length" class="badge-dot">{{ props.inquiries.length }}</span>
-          </NuxtLink>
+          <NuxtLink v-if="!auth.isLoggedIn" class="icon-btn" to="/login" aria-label="Inquiries"><Icon name="bell" /></NuxtLink>
         </template>
+        <NotificationBell v-if="auth.user" />
 
         <div class="acct">
           <button class="acct-btn" :aria-expanded="menuOpen" aria-haspopup="menu" @click.stop="menuOpen = !menuOpen">
             <span class="avatar" aria-hidden="true">
-              <template v-if="auth.user">{{ auth.initials }}</template><Icon v-else name="user" />
+              <img v-if="auth.user && face(auth.user.id)" :src="face(auth.user.id)" alt="" class="x-ava-img" /><template v-else-if="auth.user">{{ auth.initials }}</template><Icon v-else name="user" />
             </span>
             <span class="acct-txt">
               <template v-if="auth.user"><b>{{ auth.user.name }}</b><small>{{ auth.user.role }} account</small></template>
@@ -95,6 +106,7 @@ function logout() {
                 <hr />
                 <NuxtLink v-if="!isWorkspaceRole" to="/account" role="menuitem"><Icon name="user" /> My account</NuxtLink>
                 <NuxtLink v-if="!isWorkspaceRole" to="/account#saved" role="menuitem"><Icon name="heart" /> Saved homes</NuxtLink>
+                <NuxtLink :to="msgLink" role="menuitem"><Icon name="mail" /> Messages<span v-if="unreadMsgs" class="ws-tab-badge" style="margin-left:auto">{{ unreadMsgs }}</span></NuxtLink>
                 <hr />
                 <button role="menuitem" @click="logout"><Icon name="logout" /> Log out</button>
               </template>
@@ -114,7 +126,7 @@ function logout() {
     <Teleport to="body">
       <Transition name="fade"><div v-if="ui.mobileNav" class="drawer-mask" @click="ui.mobileNav = false" /></Transition>
       <Transition name="slide">
-        <aside v-if="ui.mobileNav" class="drawer" aria-label="Menu">
+        <aside v-if="ui.mobileNav" class="drawer" aria-label="Menu" @click="onDrawerClick">
           <div class="d-top">
             <Logo :size="26" />
             <button class="icon-btn" aria-label="Close menu" @click="ui.mobileNav = false"><Icon name="close" /></button>
@@ -127,6 +139,7 @@ function logout() {
             <div class="menu-head" style="padding:4px 14px;color:var(--muted);font-size:12px"><b style="color:var(--ink);display:block;font-size:14px">{{ auth.user.name }}</b>{{ auth.user.role }} account</div>
             <NuxtLink v-if="!isWorkspaceRole" to="/account"><Icon name="user" /> My account</NuxtLink>
             <NuxtLink v-if="!isWorkspaceRole" to="/account#saved"><Icon name="heart" /> Saved homes ({{ props.saved.length }})</NuxtLink>
+            <NuxtLink :to="msgLink"><Icon name="mail" /> Messages<template v-if="unreadMsgs"> ({{ unreadMsgs }} unread)</template></NuxtLink>
             <button class="d-btn" @click="logout"><Icon name="logout" /> Log out</button>
           </template>
           <template v-else>

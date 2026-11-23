@@ -5,111 +5,117 @@ useHead({
 })
 
 const router = useRouter()
+// stock photography (Unsplash); a navy panel shows if one fails to load
+const U = (id: string, w = 1000) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`
+const hide = (e: Event) => ((e.target as HTMLImageElement).style.visibility = 'hidden')
 
 const developments = [
   {
     id: 'nd1', name: 'Baan Riverside Residences', developer: 'Mindanao Homes Corp.',
-    location: 'Baan Riverside, Butuan City', type: 'Master-planned Subdivision',
-    units: 240, phase: 'Phase 2 – Pre-selling', priceFrom: '₱3.2M', completion: 'Q4 2026',
-    badge: 'Pre-selling', badgeColor: '#e05a1a', tag: 'HOT', color: '#0b2a4a',
-    features: ['Guarded entrance', 'Clubhouse & pool', 'Green parks', 'Underground drainage'],
-    description: 'A master-planned riverside community offering 240 lots and house-and-lot packages. Phase 1 is fully sold out — Phase 2 now open for reservation.'
+    location: 'Baan Riverside, Butuan City', type: 'Master-planned subdivision', img: U('photo-1564013799919-ab600027ffc6'),
+    units: 240, phase: 'Phase 2 · Pre-selling', price: 3.2, completion: 'Q4 2026', status: 'Pre-selling', hot: true,
+    features: ['Guarded entrance', 'Clubhouse and pool', 'Green parks', 'Underground drainage'],
+    description: 'A master-planned riverside community offering 240 lots and house-and-lot packages. Phase 1 is sold out; Phase 2 is open for reservation.'
   },
   {
     id: 'nd2', name: 'J.C. Aquino Executive Lofts', developer: 'Northgate Realty',
-    location: 'J.C. Aquino Avenue, Butuan City', type: 'Condominium – Mid-rise',
-    units: 120, phase: 'Phase 1 – Ready for Occupancy', priceFrom: '₱2.8M', completion: 'Ready Now',
-    badge: 'RFO', badgeColor: '#16a34a', tag: 'NEW', color: '#1a3a5c',
+    location: 'J.C. Aquino Avenue, Butuan City', type: 'Mid-rise condominium', img: U('photo-1545324418-cc1a3fa10c00'),
+    units: 120, phase: 'Phase 1 · Turnover', price: 2.8, completion: 'Ready now', status: 'Ready for occupancy', hot: false,
     features: ['24/7 CCTV', 'Rooftop lounge', 'Backup generator', 'Smart door locks'],
-    description: "Butuan's first mid-rise executive loft development along the city's commercial corridor. Studio to 2-bedroom units, fully fitted."
+    description: "Butuan's first mid-rise executive lofts on the city's commercial corridor. Studio to 2-bedroom units, fully fitted."
   },
   {
     id: 'nd3', name: 'Villa Kananga Heights', developer: 'SunEast Properties',
-    location: 'Villa Kananga, Butuan City', type: 'Subdivision – Affordable',
-    units: 380, phase: 'Phase 3 – Open Lots', priceFrom: '₱1.1M', completion: 'Q2 2027',
-    badge: 'Pre-selling', badgeColor: '#e05a1a', tag: null, color: '#2d1b69',
+    location: 'Villa Kananga, Butuan City', type: 'Affordable subdivision', img: U('photo-1568605114967-8130f3a36994'),
+    units: 380, phase: 'Phase 3 · Open lots', price: 1.1, completion: 'Q2 2027', status: 'Pre-selling', hot: false,
     features: ['Concrete road network', 'Solar street lights', "Children's playground", 'Community hall'],
-    description: "Affordable house-and-lot packages in one of Butuan's fastest-growing residential zones. Ideal for first-time homeowners and OFW investors."
+    description: 'Affordable house-and-lot packages in one of Butuan’s fastest-growing residential zones. Built for first-time owners and OFW investors.'
   }
+]
+const stats = [
+  { v: String(developments.length), l: 'Active projects' },
+  { v: developments.reduce((n, d) => n + d.units, 0).toLocaleString() + ' units', l: 'Across all phases' },
+  { v: '₱' + Math.min(...developments.map(d => d.price)) + 'M', l: 'Starting price' },
+  { v: String(developments.filter(d => d.completion === 'Ready now').length), l: 'Ready for occupancy' }
 ]
 
 const phases = [
-  { icon: '📋', title: 'Reservation', desc: 'Secure your unit with a reservation fee and lock in the pre-selling price.' },
-  { icon: '📝', title: 'Documentation', desc: 'Submit income docs, sign the Contract to Sell, and arrange financing.' },
-  { icon: '💳', title: 'Payment', desc: 'Choose in-house, bank, or Pag-IBIG financing. Monthly amortization begins.' },
-  { icon: '🏠', title: 'Turnover', desc: 'Property inspection, title transfer, and key handover upon completion.' }
+  { title: 'Reservation', desc: 'Secure your unit with a reservation fee and lock in the pre-selling price.' },
+  { title: 'Documentation', desc: 'Submit income documents, sign the Contract to Sell and arrange financing.' },
+  { title: 'Payment', desc: 'Choose in-house, bank or Pag-IBIG financing. Monthly amortization begins.' },
+  { title: 'Turnover', desc: 'Inspect the unit, transfer the title and receive your keys on completion.' }
 ]
 
 const faqs = [
-  { q: 'What is a pre-selling property?', a: 'Pre-selling means the development is not yet built or is still under construction. You buy at a lower price but wait for completion — typically 1–3 years.' },
-  { q: 'Can OFWs purchase a pre-selling unit?', a: 'Yes. OFWs can use Pag-IBIG Overseas Program (POP) or bank financing. A Special Power of Attorney (SPA) is required for remote transactions.' },
+  { q: 'What is a pre-selling property?', a: 'Pre-selling means the development is not yet built or is still under construction. You buy at a lower price but wait for completion, typically 1 to 3 years.' },
+  { q: 'Can OFWs purchase a pre-selling unit?', a: 'Yes. OFWs can use the Pag-IBIG Overseas Program or bank financing. A Special Power of Attorney is required for remote transactions.' },
   { q: 'Is a reservation fee refundable?', a: 'Reservation fees are generally non-refundable. Always read the Contract to Sell carefully before signing and paying.' },
-  { q: "How do I verify a developer's license?", a: "Check the HLURB (now DHSUD) online portal for the developer's license to sell and project registration." }
+  { q: "How do I verify a developer's license?", a: "Check the DHSUD (formerly HLURB) online portal for the developer's license to sell and the project registration." }
 ]
 
-const activeFaq = ref<number | null>(null)
-function toggleFaq(i: number) { activeFaq.value = activeFaq.value === i ? null : i }
-function browseAll() { router.push('/') }
-function browseItem(name: string) { router.push({ path: '/', query: { q: name.split(' ').slice(0, 2).join(' ') } }) }
+const activeFaq = ref<number | null>(0)
+function browseAll() { router.push('/browse') }
+function browseItem(name: string) { router.push({ path: '/browse', query: { q: name.split(' ').slice(0, 2).join(' ') } }) }
 </script>
 
 <template>
-  <div class="nd-page">
-
-    <!-- HERO -->
-    <section class="nd-hero">
-      <div class="wrap nd-hero-in">
-        <nav class="nd-crumb"><NuxtLink to="/">Home</NuxtLink><span>›</span><span>New Developments</span></nav>
-        <div class="nd-hero-content">
-          <div class="nd-hero-text">
-            <span class="nd-eyebrow">🏗️ Butuan City · New Developments</span>
-            <h1>Own a piece of Butuan's future.</h1>
-            <p>From master-planned riverside communities to mid-rise executive condos — discover pre-selling and ready-for-occupancy developments shaping Butuan City.</p>
-            <div class="nd-hero-cta">
-              <button class="btn btn-orange btn-lg" @click="browseAll">Browse All Listings →</button>
-              <a href="#projects" class="btn btn-ghost btn-lg">View Projects ↓</a>
-            </div>
-          </div>
-          <div class="nd-hero-stats">
-            <div class="nd-stat"><strong>3</strong><span>Active Projects</span></div>
-            <div class="nd-stat"><strong>740+</strong><span>Total Units</span></div>
-            <div class="nd-stat"><strong>₱1.1M</strong><span>Starting Price</span></div>
-            <div class="nd-stat"><strong>2</strong><span>RFO Available</span></div>
-          </div>
+  <div class="ph-page">
+    <section class="ph-hero">
+      <img :src="U('photo-1600585154340-be6161a56a0c', 1800)" alt="" fetchpriority="high" @error="hide" />
+      <div class="wrap ph-hero-in">
+        <nav class="ph-crumb" aria-label="Breadcrumb"><NuxtLink to="/">Home</NuxtLink><span>/</span><span>New Developments</span></nav>
+        <p class="ph-eyebrow">New developments · Butuan City</p>
+        <h1>Own a piece of Butuan’s future.</h1>
+        <p>Master-planned riverside communities, mid-rise executive lofts and affordable subdivisions — pre-selling and ready-for-occupancy projects shaping the city.</p>
+        <div class="ph-hero-cta">
+          <a href="#projects" class="btn btn-orange btn-lg">View projects</a>
+          <button class="btn btn-lg ph-btn-glass" @click="browseAll">Browse all listings →</button>
         </div>
       </div>
     </section>
 
-    <!-- PROJECTS -->
-    <section id="projects" class="nd-section">
+    <div class="wrap">
+      <div class="ph-stats">
+        <div v-for="s in stats" :key="s.l"><b>{{ s.v }}</b><span>{{ s.l }}</span></div>
+      </div>
+    </div>
+
+    <section id="projects" class="ph-section" style="scroll-margin-top:80px">
       <div class="wrap">
-        <div class="nd-section-head">
-          <h2>Featured Developments</h2>
-          <p>Pre-selling and ready-for-occupancy projects across Butuan City. Prices and availability are updated monthly.</p>
+        <div class="ph-head">
+          <div>
+            <p class="ph-kicker">Featured developments</p>
+            <h2>Projects open for reservation</h2>
+            <p>Pre-selling and ready-for-occupancy projects across Butuan City. Prices and availability are reviewed monthly.</p>
+          </div>
         </div>
-        <div class="nd-projects">
-          <article v-for="dev in developments" :key="dev.id" class="nd-project-card">
-            <div class="nd-project-top" :style="{ background: dev.color }">
-              <div class="nd-project-badge" :style="{ background: dev.badgeColor }">{{ dev.badge }}</div>
-              <div v-if="dev.tag" class="nd-project-tag">{{ dev.tag }}</div>
-              <div class="nd-project-icon">🏘️</div>
-            </div>
-            <div class="nd-project-body">
-              <p class="nd-project-dev">{{ dev.developer }}</p>
-              <h3>{{ dev.name }}</h3>
-              <p class="nd-project-desc">{{ dev.description }}</p>
-              <div class="nd-project-meta">
-                <div><span>📍</span> {{ dev.location }}</div>
-                <div><span>🏗️</span> {{ dev.type }}</div>
-                <div><span>🏠</span> {{ dev.units }} units · {{ dev.phase }}</div>
-                <div><span>📅</span> Completion: {{ dev.completion }}</div>
+        <div class="ph-grid3">
+          <article v-for="(d, i) in developments" :key="d.id" v-reveal="i" class="ph-card">
+            <div class="ph-media">
+              <img :src="d.img" :alt="`${d.name}, ${d.type.toLowerCase()} in ${d.location}`" loading="lazy" @error="hide" />
+              <div class="ph-chips">
+                <span class="ph-chip" :class="d.completion === 'Ready now' ? 'ok' : ''">{{ d.status }}</span>
+                <span v-if="d.hot" class="ph-chip hot">Selling fast</span>
               </div>
-              <ul class="nd-project-features">
-                <li v-for="f in dev.features" :key="f">✓ {{ f }}</li>
+              <div class="ph-on-photo"><small>Units from</small><b>₱{{ d.price }}M</b></div>
+            </div>
+            <div class="ph-body">
+              <p class="ph-dev">{{ d.developer }}</p>
+              <h3>{{ d.name }}</h3>
+              <p class="ph-loc"><Icon name="pin" />{{ d.location }}</p>
+              <p class="ph-desc">{{ d.description }}</p>
+              <dl class="ph-facts">
+                <div><dt>Type</dt><dd>{{ d.type }}</dd></div>
+                <div><dt>Units</dt><dd>{{ d.units }}</dd></div>
+                <div><dt>Phase</dt><dd>{{ d.phase }}</dd></div>
+                <div><dt>Completion</dt><dd>{{ d.completion }}</dd></div>
+              </dl>
+              <ul class="ph-feats">
+                <li v-for="f in d.features" :key="f"><Icon name="check" />{{ f }}</li>
               </ul>
-              <div class="nd-project-footer">
-                <div class="nd-project-price">From <strong>{{ dev.priceFrom }}</strong></div>
-                <button class="btn btn-navy" @click="browseItem(dev.name)">Browse listings →</button>
+              <div class="ph-foot">
+                <span class="x-muted">{{ d.units }} units · {{ d.phase.split(' · ')[1] }}</span>
+                <button class="btn btn-navy" @click="browseItem(d.name)">See listings →</button>
               </div>
             </div>
           </article>
@@ -117,115 +123,54 @@ function browseItem(name: string) { router.push({ path: '/', query: { q: name.sp
       </div>
     </section>
 
-    <!-- BUYING PROCESS -->
-    <section class="nd-section nd-process-section">
+    <section class="ph-section tint">
       <div class="wrap">
-        <div class="nd-section-head">
-          <h2>How Pre-Selling Works</h2>
-          <p>Four steps from reservation to key handover.</p>
-        </div>
-        <div class="nd-phases">
-          <div v-for="(phase, i) in phases" :key="i" class="nd-phase">
-            <div class="nd-phase-icon">{{ phase.icon }}</div>
-            <div class="nd-phase-num">0{{ i + 1 }}</div>
-            <h4>{{ phase.title }}</h4>
-            <p>{{ phase.desc }}</p>
+        <div class="ph-head">
+          <div>
+            <p class="ph-kicker">The buying process</p>
+            <h2>How pre-selling works</h2>
+            <p>Four steps from reservation to key handover.</p>
           </div>
         </div>
+        <ol class="ph-steps" style="list-style:none;padding:0">
+          <li v-for="(p, i) in phases" :key="p.title" v-reveal="i" class="ph-step">
+            <em>Step 0{{ i + 1 }}</em>
+            <h4>{{ p.title }}</h4>
+            <p>{{ p.desc }}</p>
+          </li>
+        </ol>
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="nd-section">
-      <div class="wrap nd-faq-wrap">
-        <div class="nd-section-head">
-          <h2>Frequently Asked Questions</h2>
-          <p>Common questions about buying pre-selling and new development properties in Butuan.</p>
+    <section class="ph-section">
+      <div class="wrap ph-faq">
+        <div class="ph-head" style="margin:0">
+          <div>
+            <p class="ph-kicker">Good to know</p>
+            <h2>Questions buyers ask</h2>
+            <p>Common questions about pre-selling and new developments in Butuan.</p>
+          </div>
         </div>
-        <div class="nd-faq">
-          <div v-for="(item, i) in faqs" :key="i" class="nd-faq-item" :class="{ open: activeFaq === i }">
-            <button class="nd-faq-q" @click="toggleFaq(i)">
-              {{ item.q }}<span class="nd-faq-icon">{{ activeFaq === i ? '−' : '+' }}</span>
+        <div class="ph-faq-list">
+          <div v-for="(f, i) in faqs" :key="f.q" class="ph-faq-item" :class="{ open: activeFaq === i }">
+            <button class="ph-faq-q" :aria-expanded="activeFaq === i" @click="activeFaq = activeFaq === i ? null : i">
+              {{ f.q }}<span aria-hidden="true">+</span>
             </button>
-            <Transition name="faq">
-              <p v-if="activeFaq === i" class="nd-faq-a">{{ item.a }}</p>
-            </Transition>
+            <Transition name="err"><p v-if="activeFaq === i" class="ph-faq-a">{{ f.a }}</p></Transition>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CTA BANNER -->
-    <section class="nd-cta-banner">
-      <div class="wrap nd-cta-in">
+    <section class="ph-cta">
+      <img :src="U('photo-1600607687939-ce8a6c25118c', 1800)" alt="" loading="lazy" @error="hide" />
+      <div class="wrap ph-cta-in">
         <div>
           <h2>Ready to reserve your unit?</h2>
-          <p>Browse all available listings, filter by budget and location, and send an inquiry to our agents.</p>
+          <p>Browse every available listing, filter by budget and location, and send a viewing request to a verified agent.</p>
         </div>
-        <button class="btn btn-orange btn-lg" @click="browseAll">Browse All Listings →</button>
+        <button class="btn btn-orange btn-lg" @click="browseAll">Browse all listings →</button>
       </div>
     </section>
-
   </div>
 </template>
-
-<style scoped>
-.nd-page { background: var(--surface, #f8f9fb); }
-.nd-hero { background: linear-gradient(135deg, #0b2a4a 0%, #1a4a7a 60%, #0f3560 100%); color: #fff; padding: 80px 0 60px; }
-.nd-hero-in { position: relative; z-index: 1; }
-.nd-crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,.6); margin-bottom: 32px; }
-.nd-crumb a { color: rgba(255,255,255,.7); text-decoration: none; }
-.nd-crumb a:hover { color: #fff; }
-.nd-hero-content { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; }
-.nd-hero-text { flex: 1 1 380px; }
-.nd-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .08em; color: #f59e4a; text-transform: uppercase; }
-.nd-hero-text h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; margin: 12px 0 16px; line-height: 1.1; color: #fff; }
-.nd-hero-text p { font-size: 1.05rem; color: rgba(255,255,255,.8); line-height: 1.7; max-width: 520px; }
-.nd-hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.nd-hero-stats { display: flex; flex-wrap: wrap; gap: 16px; align-self: center; }
-.nd-stat { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); backdrop-filter: blur(8px); border-radius: 16px; padding: 20px 28px; text-align: center; min-width: 110px; }
-.nd-stat strong { display: block; font-size: 2rem; font-weight: 800; color: #f59e4a; }
-.nd-stat span { font-size: 12px; color: rgba(255,255,255,.7); }
-.nd-section { padding: 72px 0; }
-.nd-process-section { background: #fff; }
-.nd-section-head { text-align: center; margin-bottom: 48px; }
-.nd-section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #0b2a4a; margin-bottom: 10px; }
-.nd-section-head p { color: #64748b; font-size: 1rem; max-width: 560px; margin: 0 auto; }
-.nd-projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; justify-items: center; }
-.nd-project-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.07); transition: transform .2s, box-shadow .2s; width: 100%; max-width: 400px; }
-.nd-project-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.12); }
-.nd-project-top { position: relative; height: 160px; display: flex; align-items: center; justify-content: center; }
-.nd-project-icon { font-size: 4rem; opacity: .5; }
-.nd-project-badge { position: absolute; top: 16px; left: 16px; font-size: 11px; font-weight: 700; color: #fff; padding: 4px 12px; border-radius: 50px; letter-spacing: .06em; text-transform: uppercase; }
-.nd-project-tag { position: absolute; top: 16px; right: 16px; background: #fff; color: #e05a1a; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 50px; }
-.nd-project-body { padding: 24px; }
-.nd-project-dev { font-size: 12px; font-weight: 600; color: #e05a1a; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-.nd-project-body h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem; font-weight: 800; color: #0b2a4a; margin-bottom: 10px; }
-.nd-project-desc { font-size: .9rem; color: #64748b; line-height: 1.6; margin-bottom: 16px; }
-.nd-project-meta { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.nd-project-meta div { font-size: .85rem; color: #475569; display: flex; gap: 8px; }
-.nd-project-features { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin-bottom: 20px; }
-.nd-project-features li { font-size: .8rem; background: #f1f5f9; color: #0b2a4a; padding: 4px 10px; border-radius: 50px; font-weight: 500; }
-.nd-project-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 16px; }
-.nd-project-price { font-size: .85rem; color: #64748b; }
-.nd-project-price strong { color: #0b2a4a; font-size: 1.1rem; }
-.nd-phases { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
-.nd-phase { background: #f8f9fb; border-radius: 16px; padding: 28px 20px; text-align: center; border: 1px solid #e2e8f0; position: relative; width: 220px; flex: 0 1 220px; }
-.nd-phase-icon { font-size: 2.4rem; margin-bottom: 8px; }
-.nd-phase-num { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 800; color: #cbd5e1; }
-.nd-phase h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #0b2a4a; margin-bottom: 8px; }
-.nd-phase p { font-size: .85rem; color: #64748b; line-height: 1.6; }
-.nd-faq-wrap { max-width: 720px; margin: 0 auto; }
-.nd-faq { display: flex; flex-direction: column; gap: 12px; }
-.nd-faq-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
-.nd-faq-item.open { border-color: #0b2a4a; }
-.nd-faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; background: none; border: none; cursor: pointer; font-size: .95rem; font-weight: 600; color: #0b2a4a; text-align: left; }
-.nd-faq-icon { font-size: 1.4rem; color: #e05a1a; flex-shrink: 0; }
-.nd-faq-a { padding: 0 20px 18px; font-size: .9rem; color: #475569; line-height: 1.7; }
-.faq-enter-active, .faq-leave-active { transition: opacity .2s, transform .2s; }
-.faq-enter-from, .faq-leave-to { opacity: 0; transform: translateY(-6px); }
-.nd-cta-banner { background: linear-gradient(135deg, #e05a1a, #f59e4a); padding: 64px 0; }
-.nd-cta-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; }
-.nd-cta-banner h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: #fff; margin-bottom: 8px; }
-.nd-cta-banner p { color: rgba(255,255,255,.85); font-size: .95rem; }
-</style>

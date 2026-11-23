@@ -111,17 +111,17 @@ async function submit() {
 
       <div class="role-cards" role="group" aria-label="Choose workspace">
         <button type="button" :aria-pressed="role === 'client'" @click="role = 'client'">
-          <span class="rc-icon">🏠</span>
+          <span class="rc-icon"><Icon name="home" /></span>
           <span class="rc-label">Client</span>
           <span class="rc-desc">Save homes &amp; request viewings</span>
         </button>
         <button type="button" :aria-pressed="role === 'agent'" @click="role = 'agent'">
-          <span class="rc-icon">📋</span>
+          <span class="rc-icon"><Icon name="list" /></span>
           <span class="rc-label">Agent</span>
           <span class="rc-desc">Listings, requests &amp; appointments</span>
         </button>
         <button type="button" :aria-pressed="role === 'admin'" @click="role = 'admin'">
-          <span class="rc-icon">🛡️</span>
+          <span class="rc-icon"><Icon name="shield" /></span>
           <span class="rc-label">Admin</span>
           <span class="rc-desc">Oversee agents, listings &amp; queue</span>
         </button>

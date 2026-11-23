@@ -37,6 +37,9 @@ const paths: Record<string, string> = {
   eye: '<path d="M2 12s3.500-7 10-7 10 7 10 7-3.500 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   alert: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.01"/>',
   trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
   empty: '<path d="M3 11 12 3l9 8M5 10v10h14V10M9 20v-5h6v5"/><path d="m4 4 16 16"/>'
 }
 const html = computed(() => paths[props.name] || '')

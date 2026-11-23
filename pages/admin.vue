@@ -1,10 +1,16 @@
 <script setup lang="ts">
+
 definePageMeta({ middleware: 'auth', ssr: false })
 useHead({ title: 'Admin Workspace | BahayHub Butuan' })
 
 const auth = useAuthStore()
 const ui = useUiStore()
 const router = useRouter()
+const route = useRoute()
+const pay = usePaymentStore()
+const creds = useCredentialStore()
+const idChecks = useIdCheckStore()
+const msgStore = useMessageStore()
 
 // Guard admin workspace
 watch(() => auth.user, u => {
@@ -12,16 +18,70 @@ watch(() => auth.user, u => {
   if (!u) router.replace('/login?role=admin')
 }, { immediate: true })
 
-const activeTab = ref('overview')
 const tabs = [
   { id: 'overview',       label: 'Overview' },
   { id: 'client-reqs',   label: 'Client requests' },
   { id: 'agents',         label: 'Agents' },
   { id: 'listing-review', label: 'Listing review' },
   { id: 'appts-offers',   label: 'Appointments / Offers' },
+  { id: 'payments',       label: 'Payment log' },
+  { id: 'commission',     label: 'Commission summary' },
+  { id: 'analytics',      label: 'Analytics' },
+  { id: 'verification',   label: 'Verification' },
+  { id: 'messages',       label: 'Messages' },
+  { id: 'profile',        label: 'Profile' },
   { id: 'activity',       label: 'Activity' },
 ]
+const activeTab = ref(tabs.some(t => t.id === route.query.tab) ? String(route.query.tab) : 'overview')
+// notification links (/admin?tab=...) switch tabs even when this page is already open
+watch(() => route.query.tab, t => {
+  if (!tabs.some(x => x.id === t) || activeTab.value === t) return
+  activeTab.value = String(t)
+  if (!route.query.focus) window.scrollTo({ top: 0, behavior: 'smooth' }) // a focused row scrolls itself into view
+})
+// clicking a tab writes it to the URL, so a notification that links to any tab is always a real navigation
+watch(activeTab, t => { if (route.query.tab !== t) router.replace({ query: { tab: t } }) })
 
+const HERO: Record<string, [string, string]> = {
+  payments: ['Keep every sale on record.', 'Log every payment, update its status, and track the 10% commission.'],
+  commission: ['Keep every sale on record.', 'See what each agent has earned from paid sales and rentals.'],
+  analytics: ['Sales analytics', 'Paid sales, commission, and closed deals across every agent.'],
+  verification: ['Verify agent licenses.', 'Review PRC license submissions and approve or reject each application.'],
+  profile: ['Your profile', 'Your photo and details as agents and clients see them in messages.'],
+  messages: ['Messages', 'Talk with agents and clients. Conversations stay in this browser.']
+}
+const heroTitle = computed(() => HERO[activeTab.value]?.[0] ?? 'Keep the Butuan workspace moving.')
+const heroSub = computed(() => HERO[activeTab.value]?.[1] ?? 'Coordinate client inquiry routing, agent verification, listing review moderation, and viewing schedules from one centralized hub.')
+const pendingPay = computed(() => pay.items.filter(p => p.status === 'Pending').length)
+// ---- Overview summary: everything at a glance, each item links to where it is handled
+const face = useFace()
+const money = computed(() => totals(pay.items))
+const sold = computed(() => paidSales(pay.items))
+const overviewKpis = computed(() => [
+  { l: 'Total paid', v: money.value.paidAmount, s: `${pay.items.filter(p => p.status === 'Paid').length} payments marked Paid`, i: 'cash', to: '/admin?tab=payments' },
+  { l: 'Commission earned', v: money.value.earned, s: '10% of paid sales and rent', i: 'building', o: true, to: '/admin?tab=commission' },
+  { l: 'Pending payments', v: money.value.pendingAmount, s: `${pendingPay.value} waiting to be marked Paid`, i: 'clock', to: '/admin?tab=payments' },
+  { l: 'Closed sales', v: sold.value.length, s: `Average ${pesoShort(sold.value.length ? sold.value.reduce((n, p) => n + p.amount, 0) / sold.value.length : 0)} per sale`, i: 'check', n: true, to: '/admin?tab=analytics' }
+])
+const attention = computed(() => [
+  { label: 'PRC licenses to review', count: creds.pendingCount, to: '/admin?tab=verification', icon: 'shield', urgent: true },
+  { label: 'Buyer IDs to review', count: idChecks.pendingCount, to: '/admin?tab=verification', icon: 'user', urgent: true },
+  { label: 'Payments pending', count: pendingPay.value, to: '/admin?tab=payments', icon: 'cash' },
+  { label: 'Listings awaiting review', count: reviewCount.value, to: '/admin?tab=listing-review', icon: 'home' },
+  { label: 'Open client requests', count: openReqCount.value, to: '/admin?tab=client-reqs', icon: 'list' },
+  { label: 'Unread messages', count: msgStore.unread(auth.user), to: '/admin?tab=messages', icon: 'chat' }
+])
+const leaders = computed(() => [...new Set(pay.items.map(p => p.agent))]
+  .map(a => ({ a, id: creds.items.find(c => c.fullName === a)?.agentId, ...totals(pay.items.filter(p => p.agent === a)) }))
+  .sort((x, y) => y.earned - x.earned))
+const recentPays = computed(() => [...pay.items].sort((x, y) => y.date.localeCompare(x.date)).slice(0, 4))
+const queue = computed(() => [
+  ...creds.items.filter(c => c.status === 'Pending review').map(c => ({ id: c.agentId, name: c.fullName, kind: 'PRC license' })),
+  ...idChecks.items.filter(c => c.status === 'Pending review').map(c => ({ id: c.userId, name: nameOf(c.userId, c.fullName), kind: 'Buyer ID' }))
+])
+
+const badgeOf = (id: string) => id === 'client-reqs' ? openReqCount.value : id === 'listing-review' ? reviewCount.value
+  : id === 'payments' ? pendingPay.value : id === 'verification' ? creds.pendingCount + idChecks.pendingCount : id === 'messages' ? msgStore.unread(auth.user) : 0
 // --- Admin Reactive State ---
 
 // 1. Registered Agents
@@ -244,6 +304,8 @@ interface ModerationListing {
   notes: string
 }
 
+const viewListing = ref('')
+const curListing = computed(() => moderationListings.value.find(l => l.id === viewListing.value))
 const moderationListings = ref<ModerationListing[]>([
   {
     id: 'LST-201',
@@ -402,11 +464,7 @@ const publishedCount = computed(() => moderationListings.value.filter(l => l.sta
 const reviewCount = computed(() => moderationListings.value.filter(l => l.status === 'Awaiting Review').length)
 const verifiedAgentsCount = computed(() => agentsList.value.filter(a => a.verified).length)
 const openReqCount = computed(() => requests.value.filter(r => r.statusTag !== 'Resolved').length)
-
-function signOut() {
-  auth.logout()
-  router.push('/login')
-}
+const tabsWithBadges = computed(() => tabs.map(t => ({ ...t, badge: badgeOf(t.id) })))
 </script>
 
 <template>
@@ -417,14 +475,12 @@ function signOut() {
       <div class="wrap ws-hero-in">
         <div class="ws-hero-left">
           <p class="ws-eyebrow">Admin Workspace <span class="ws-dot">·</span> Butuan City Executive</p>
-          <h1 class="ws-title ws-title-lg">Keep the Butuan workspace moving.</h1>
-          <p class="ws-sub">Coordinate client inquiry routing, agent verification, listing review moderation, and viewing schedules from one centralized hub.</p>
-        </div>
-        <div class="ws-hero-card ws-hero-card-warn">
-          <p class="ws-signed-label">Platform Control Panel</p>
-          <p class="ws-signed-email">{{ auth.user.email }}</p>
-          <p class="ws-signed-note">All actions update client &amp; agent routes in real-time.</p>
-          <button class="btn btn-ghost btn-sm ws-signout" style="margin-top:10px" @click="signOut">Sign out</button>
+          <Transition name="swap" mode="out-in">
+            <div :key="heroTitle">
+              <h1 class="ws-title ws-title-lg">{{ heroTitle }}</h1>
+              <p class="ws-sub">{{ heroSub }}</p>
+            </div>
+          </Transition>
         </div>
       </div>
     </div>
@@ -440,24 +496,105 @@ function signOut() {
             @click="activeTab = tab.id"
           >
             {{ tab.label }}
-            <span v-if="tab.id === 'client-reqs' && openReqCount > 0" class="ws-tab-badge">{{ openReqCount }}</span>
-            <span v-else-if="tab.id === 'listing-review' && reviewCount > 0" class="ws-tab-badge">{{ reviewCount }}</span>
+            <span v-if="badgeOf(tab.id) > 0" class="ws-tab-badge">{{ badgeOf(tab.id) }}</span>
           </button>
         </nav>
+        <WorkspaceTabSelect v-model="activeTab" :tabs="tabsWithBadges" />
       </div>
     </div>
 
     <!-- Main Workspace Content -->
     <div class="wrap ws-body">
+      <SituationNotice />
+      <ContextDrawer :open="!!curListing" :title="curListing?.title ?? ''" :eyebrow="curListing?.id" @close="viewListing = ''">
+        <template v-if="curListing">
+          <dl class="x-dl">
+            <div><dt>Status</dt><dd>{{ curListing.status }}</dd></div>
+            <div><dt>Location</dt><dd>{{ curListing.location }}</dd></div>
+            <div><dt>Type</dt><dd>{{ curListing.type }}</dd></div>
+            <div><dt>Asking price</dt><dd>{{ curListing.price }}</dd></div>
+            <div><dt>Submitted</dt><dd>{{ curListing.submittedDate }}</dd></div>
+            <div><dt>Agent</dt><dd>{{ curListing.submittedBy }} <VerifiedBadge v-if="creds.isVerifiedName(curListing.submittedBy)" /><span v-else class="x-muted">(not PRC verified)</span></dd></div>
+          </dl>
+          <p class="ws-card-eyebrow" style="margin:16px 0 6px">Compliance notes</p>
+          <p>{{ curListing.notes }}</p>
+          <p class="ws-card-eyebrow" style="margin:16px 0 6px">Document package</p>
+          <ul class="x-files">
+            <li v-for="d in ['Transfer Certificate of Title', 'Tax declaration', 'Latest real property tax receipt', 'Authority to sell']" :key="d"><span>{{ d }}</span><b>on file</b></li>
+          </ul>
+        </template>
+      </ContextDrawer>
+      <Transition name="swap" mode="out-in">
 
       <!-- ================= TAB: OVERVIEW ================= -->
-      <section v-if="activeTab === 'overview'" class="ws-panel-fade">
+
+      <section v-if="activeTab === 'overview'" class="ws-panel-fade x-ov">
+        <AttentionStrip :items="attention" />
+
+        <p class="x-ov-label">Money</p>
+        <div class="ws-stats">
+          <NuxtLink v-for="(k, i) in overviewKpis" :key="k.l" v-reveal="i" :to="k.to" class="ws-stat clickable">
+            <div class="ws-stat-top"><span class="ws-stat-label">{{ k.l }}</span><span class="ws-stat-icon"><Icon :name="k.i" /></span></div>
+            <div class="ws-stat-val" :class="{ 'x-orange': k.o }"><CountUp :value="k.v" :fmt="k.n ? String : undefined" /></div>
+            <div class="ws-stat-sub">{{ k.s }}</div>
+          </NuxtLink>
+        </div>
+
+        <div class="x-ov-2">
+          <MiniTrend :payments="pay.items" to="/admin?tab=analytics" />
+          <div class="ws-card">
+            <div class="ws-card-header" style="margin-bottom:8px">
+              <div><p class="ws-card-eyebrow">Top agents</p><h3 class="ws-card-title">Commission earned</h3></div>
+              <NuxtLink to="/admin?tab=commission" class="ws-link-btn">Full summary →</NuxtLink>
+            </div>
+            <ol class="x-lead">
+              <li v-for="(r, i) in leaders" :key="r.a">
+                <span class="x-lead-rank">{{ i + 1 }}</span>
+                <img v-if="face(r.id)" :src="face(r.id)" alt="" class="x-ava" /><span v-else class="x-ava x-ava-ph">{{ r.a[0] }}</span>
+                <span class="x-lead-name"><b>{{ r.a }}</b><small>{{ r.count }} payments · {{ pesoShort(r.paidAmount) }} paid</small></span>
+                <span class="x-lead-bar"><i :style="{ width: (leaders[0].earned ? (r.earned / leaders[0].earned) * 100 : 0) + '%' }" /></span>
+                <b class="x-orange">{{ pesoShort(r.earned) }}</b>
+              </li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="x-ov-3">
+          <div class="ws-card">
+            <div class="ws-card-header" style="margin-bottom:6px">
+              <div><p class="ws-card-eyebrow">Payment log</p><h3 class="ws-card-title">Latest payments</h3></div>
+              <NuxtLink to="/admin?tab=payments" class="ws-link-btn">All →</NuxtLink>
+            </div>
+            <NuxtLink v-for="p in recentPays" :key="p.id" :to="`/admin?tab=payments&focus=${p.id}`" class="x-mini-row">
+              <span><b>{{ p.id }}</b> <span class="x-tag" :class="p.type.toLowerCase()">{{ p.type }}</span><small>{{ p.clientName }} · {{ p.agent }}</small></span>
+              <span class="x-mini-side"><b>{{ pesoShort(p.amount) }}</b><span class="x-pill" :class="p.status.toLowerCase()">{{ p.status }}</span></span>
+            </NuxtLink>
+          </div>
+          <div class="ws-card">
+            <div class="ws-card-header" style="margin-bottom:6px">
+              <div><p class="ws-card-eyebrow">Verification</p><h3 class="ws-card-title">Waiting for a decision</h3></div>
+              <NuxtLink to="/admin?tab=verification" class="ws-link-btn">Review →</NuxtLink>
+            </div>
+            <NuxtLink v-for="q in queue" :key="q.id" :to="`/admin?tab=verification&focus=${q.id}`" class="x-mini-row">
+              <span class="x-who"><img v-if="face(q.id)" :src="face(q.id)" alt="" class="x-ava" /><span><b>{{ q.name }}</b><small>{{ q.kind }}</small></span></span>
+              <span class="x-pill pending">Pending</span>
+            </NuxtLink>
+            <p v-if="!queue.length" class="x-empty" style="padding:14px 0">Nothing to review. All licenses and IDs are decided.</p>
+            <div class="ws-coverage-stats" style="margin-top:8px">
+              <div class="ws-coverage-row"><span>Verified agents</span><b>{{ creds.items.filter(c => c.status === 'Verified').length }} / {{ creds.items.length }}</b></div>
+              <div class="ws-coverage-row"><span>Verified buyers</span><b>{{ idChecks.items.filter(c => c.status === 'Verified').length }} / {{ idChecks.items.length }}</b></div>
+            </div>
+          </div>
+          <RecentFeed />
+        </div>
+
+        <p class="x-ov-label">Day-to-day</p>
         <!-- Stat Cards -->
         <div class="ws-stats ws-stats-4">
           <div class="ws-stat clickable" @click="activeTab = 'listing-review'">
             <div class="ws-stat-top">
               <span class="ws-stat-label">Published listings</span>
-              <span class="ws-stat-icon-circle" style="color:#3b82f6">🔔</span>
+              <span class="ws-stat-icon"><Icon name="building" /></span>
             </div>
             <div class="ws-stat-val">{{ publishedCount }}</div>
             <div class="ws-stat-sub">Active in Butuan City directory</div>
@@ -466,7 +603,7 @@ function signOut() {
           <div class="ws-stat clickable" @click="activeTab = 'listing-review'">
             <div class="ws-stat-top">
               <span class="ws-stat-label">Awaiting review</span>
-              <span class="ws-stat-icon-circle" style="color:#f59e0b">⏰</span>
+              <span class="ws-stat-icon"><Icon name="clock" /></span>
             </div>
             <div class="ws-stat-val">{{ reviewCount }}</div>
             <div class="ws-stat-sub">Submitted by local agents</div>
@@ -475,7 +612,7 @@ function signOut() {
           <div class="ws-stat clickable" @click="activeTab = 'agents'">
             <div class="ws-stat-top">
               <span class="ws-stat-label">Agents verified</span>
-              <span class="ws-stat-icon-circle" style="color:#22c55e">✔</span>
+              <span class="ws-stat-icon"><Icon name="shield" /></span>
             </div>
             <div class="ws-stat-val">{{ verifiedAgentsCount }} / {{ agentsList.length }}</div>
             <div class="ws-stat-sub">PRC real estate licenses checked</div>
@@ -484,7 +621,7 @@ function signOut() {
           <div class="ws-stat clickable" @click="activeTab = 'client-reqs'">
             <div class="ws-stat-top">
               <span class="ws-stat-label">Open client requests</span>
-              <span class="ws-stat-icon-circle" style="color:#f97316">✏</span>
+              <span class="ws-stat-icon"><Icon name="list" /></span>
             </div>
             <div class="ws-stat-val">{{ openReqCount }}</div>
             <div class="ws-stat-sub">In queue needing agent assignment</div>
@@ -527,14 +664,7 @@ function signOut() {
             <p class="ws-card-eyebrow">Local Coverage</p>
             <h3 class="ws-card-title">Butuan City</h3>
             <p class="ws-card-sub" style="margin-bottom:14px">Records are limited to Butuan City. Admin actions are saved in this browser and update live.</p>
-            <div class="ws-map-placeholder">
-              <div class="ws-map-inner">
-                <span class="ws-map-pin" style="top:42%;left:55%">📍</span>
-                <span class="ws-map-pin" style="top:62%;left:38%">📍</span>
-                <span class="ws-map-pin" style="top:35%;left:25%">📍</span>
-                <p class="ws-map-label">Butuan City<br><small>Agusan del Norte · Caraga</small></p>
-              </div>
-            </div>
+            <div class="ws-map-real"><iframe title="Map of Butuan City" loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=125.47%2C8.89%2C125.60%2C8.99&amp;layer=mapnik&amp;marker=8.9475%2C125.5406" /></div>
             <div class="ws-coverage-stats">
               <div class="ws-coverage-row"><span>Total Audit Events</span><b>{{ activityEvents.length }}</b></div>
               <div class="ws-coverage-row"><span>Registered Agents</span><b>{{ agentsList.length }}</b></div>
@@ -588,8 +718,8 @@ function signOut() {
               </div>
 
               <div class="ws-req-contact-info">
-                <span>📞 {{ r.phone }}</span>
-                <span>✉ {{ r.email }}</span>
+                <span><Icon name="phone" /> {{ r.phone }}</span>
+                <span><Icon name="mail" /> {{ r.email }}</span>
                 <small style="color:var(--muted)">Received: {{ r.date }}</small>
               </div>
             </div>
@@ -616,13 +746,13 @@ function signOut() {
                   class="btn btn-navy btn-sm"
                   @click="resolveRequest(r)"
                 >
-                  ✔ Mark Resolved
+                  Mark resolved
                 </button>
                 <button
                   class="btn btn-ghost btn-sm"
                   @click="r.priority = r.priority === 'Urgent' ? 'Normal' : 'Urgent'; ui.toast(`Priority set to ${r.priority}`, 'info')"
                 >
-                  ⚡ Toggle Priority
+                  Toggle priority
                 </button>
               </div>
             </div>
@@ -683,7 +813,7 @@ function signOut() {
                 <div style="display:flex;align-items:center;gap:8px">
                   <h3 style="font-size:16px;font-weight:700;color:var(--ink)">{{ a.name }}</h3>
                   <span :class="['ws-badge', a.verified ? 'ws-badge-green' : 'ws-badge-orange']">
-                    {{ a.verified ? '✔ Verified' : '⏳ Pending' }}
+                    {{ a.verified ? 'Verified' : 'Pending' }}
                   </span>
                 </div>
                 <p style="font-size:12.5px;color:var(--navy);font-weight:600">{{ a.license }}</p>
@@ -694,12 +824,12 @@ function signOut() {
             <div class="ws-agent-metrics-row">
               <div class="ws-agent-metric"><span>Active Listings</span><b>{{ a.activeListings }}</b></div>
               <div class="ws-agent-metric"><span>Closed Deals</span><b>{{ a.closedDeals }}</b></div>
-              <div class="ws-agent-metric"><span>Client Rating</span><b>{{ a.rating }} ★</b></div>
+              <div class="ws-agent-metric"><span>Client Rating</span><b>{{ a.rating }} / 5</b></div>
             </div>
 
             <div class="ws-agent-contact-box">
-              <span>✉ {{ a.email }}</span>
-              <span>📞 {{ a.phone }}</span>
+              <span><Icon name="mail" /> {{ a.email }}</span>
+              <span><Icon name="phone" /> {{ a.phone }}</span>
             </div>
 
             <div class="ws-agent-actions">
@@ -747,7 +877,7 @@ function signOut() {
                   {{ l.status }}
                 </span>
                 <h3 style="font-size:17px;font-weight:700;color:var(--ink);margin-top:6px">{{ l.title }}</h3>
-                <p style="font-size:13px;color:var(--muted)">📍 {{ l.location }} · {{ l.type }} · Submitting Agent: <b style="color:var(--navy)">{{ l.submittedBy }}</b></p>
+                <p style="font-size:13px;color:var(--muted)"><Icon name="pin" /> {{ l.location }} · {{ l.type }} · Submitting Agent: <b style="color:var(--navy)">{{ l.submittedBy }}</b></p>
               </div>
 
               <div class="ws-mod-price">
@@ -766,29 +896,30 @@ function signOut() {
                 class="btn btn-navy btn-sm"
                 @click="setListingStatus(l, 'Approved & Published')"
               >
-                ✔ Approve &amp; Publish
+                Approve &amp; publish
               </button>
               <button
                 v-if="l.status !== 'Needs Revision'"
                 class="btn btn-ghost btn-sm"
                 @click="setListingStatus(l, 'Needs Revision')"
               >
-                📝 Request Revision
+                Request revision
               </button>
               <button
                 v-if="l.status !== 'Rejected'"
                 class="btn btn-soft btn-sm"
                 @click="setListingStatus(l, 'Rejected')"
               >
-                ✖ Reject
+                Reject
               </button>
-              <button class="btn btn-ghost btn-sm" style="margin-left:auto" @click="ui.toast('Showing full document package...', 'info')">
-                📄 View Title &amp; Tax Docs
+              <button class="btn btn-ghost btn-sm" style="margin-left:auto" @click="viewListing = l.id">
+                View details &amp; docs
               </button>
             </div>
           </div>
         </div>
       </section>
+
 
       <!-- ================= TAB: APPOINTMENTS & OFFERS ================= -->
       <section v-else-if="activeTab === 'appts-offers'" class="ws-panel-fade">
@@ -816,7 +947,7 @@ function signOut() {
               <div class="ws-req-info">
                 <b>{{ a.property }}</b>
                 <p>Client: {{ a.client }} · Assigned Agent: <b style="color:var(--navy)">{{ a.agent }}</b></p>
-                <small style="color:var(--muted)">📅 {{ a.date }} at {{ a.time }}</small>
+                <small style="color:var(--muted)"><Icon name="calendar" /> {{ a.date }} at {{ a.time }}</small>
               </div>
               <div style="display:flex;align-items:center;gap:10px">
                 <span :class="['ws-badge', a.status === 'Confirmed' ? 'ws-badge-green' : 'ws-badge-orange']">{{ a.status }}</span>
@@ -853,6 +984,13 @@ function signOut() {
       </section>
 
       <!-- ================= TAB: ACTIVITY AUDIT ================= -->
+      <PaymentsPanel v-else-if="activeTab === 'payments'" mode="admin" />
+      <PaymentsPanel v-else-if="activeTab === 'commission'" mode="admin" summary />
+      <SalesAnalytics v-else-if="activeTab === 'analytics'" scope="admin" />
+      <div v-else-if="activeTab === 'verification'"><VerificationAdmin /><BuyerVerificationAdmin /></div>
+      <MessagesPanel v-else-if="activeTab === 'messages'" />
+      <ProfileEditor v-else-if="activeTab === 'profile'" />
+
       <section v-else-if="activeTab === 'activity'" class="ws-panel-fade">
         <div class="ws-section-header-row">
           <div>
@@ -871,7 +1009,7 @@ function signOut() {
                 {{ f }}
               </button>
             </div>
-            <button class="btn btn-ghost btn-sm" @click="exportAuditLog">📋 Copy JSON</button>
+            <button class="btn btn-ghost btn-sm" @click="exportAuditLog">Copy JSON</button>
           </div>
         </div>
 
@@ -903,6 +1041,7 @@ function signOut() {
         </div>
       </section>
 
+      </Transition>
     </div>
   </div>
 </template>

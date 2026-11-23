@@ -9,9 +9,9 @@ const USERS_KEY = 'bahayhub_users'
 
 // Demo accounts for the midterm (frontend only, no backend yet)
 const DEMO = [
-  { id: 'u-client', name: 'Client Demo', email: 'client@bahayhub.test', password: 'client123', role: 'client' as Role },
-  { id: 'u-agent', name: 'Agent Demo', email: 'agent@bahayhub.test', password: 'agent123', role: 'agent' as Role },
-  { id: 'u-admin', name: 'Admin Demo', email: 'admin@bahayhub.test', password: 'admin123', role: 'admin' as Role }
+  { id: 'u-client', name: 'Maria Santos', email: 'client@bahayhub.test', password: 'client123', role: 'client' as Role },
+  { id: 'u-agent', name: 'Rica Santos', email: 'agent@bahayhub.test', password: 'agent123', role: 'agent' as Role },
+  { id: 'u-admin', name: 'Andrea Villamor', email: 'admin@bahayhub.test', password: 'admin123', role: 'admin' as Role }
 ]
 
 async function hash(email: string, password: string) {
@@ -42,17 +42,21 @@ export const useAuthStore = defineStore('auth', {
         this.users = raw ? JSON.parse(raw) : []
         const seeded: StoredUser[] = []
         for (const d of DEMO) {
-          if (!this.users.find(u => u.email === d.email)) {
+          const have = this.users.find(u => u.email === d.email)
+          if (have && have.name !== d.name) have.name = d.name // keep demo names in step with seeded payments
+          if (!have) {
             seeded.push({ id: d.id, name: d.name, email: d.email, role: d.role, hash: await hash(d.email, d.password) })
           }
         }
-        if (seeded.length) {
-          this.users.push(...seeded)
-          localStorage.setItem(USERS_KEY, JSON.stringify(this.users))
-        }
+        this.users.push(...seeded)
+        localStorage.setItem(USERS_KEY, JSON.stringify(this.users))
         // Session uses sessionStorage (clears on tab/browser close)
         const s = sessionStorage.getItem(SESSION_KEY)
-        if (s) this.user = JSON.parse(s)
+        if (s) {
+          this.user = JSON.parse(s)
+          const fresh = this.users.find(u => u.id === this.user!.id) // pick up a renamed demo account
+          if (fresh && this.user) this.user.name = fresh.name
+        }
       } catch { /* storage unavailable */ }
       this.ready = true
     },
@@ -73,13 +77,21 @@ export const useAuthStore = defineStore('auth', {
       this.users.push(user)
       localStorage.setItem(USERS_KEY, JSON.stringify(this.users))
       // Do NOT auto-login — user must sign in manually after registration
-      return { ok: true }
+      return { ok: true, id: user.id }
     },
     setSession(u: StoredUser | User) {
+      usePropertyStore().hydrateLocal()
       this.user = { id: u.id, name: u.name, email: u.email, role: u.role }
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(this.user))
     },
+    // Demo only: lets the admin preview what each role sees
+    async switchDemoRole(role: Role) {
+      const u = this.users.find(x => x.email === `${role}@bahayhub.test`)
+      if (u) this.setSession(u)
+    },
     logout() {
+      const p = usePropertyStore()
+      p.saved = []; p.inquiries = [] // nothing from a previous account stays on screen
       this.user = null
       sessionStorage.removeItem(SESSION_KEY)
     }

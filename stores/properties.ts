@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+// Listings ship with the app (small file). No request means no base-URL 404s and the data renders on the server too.
+import listingData from '~/public/data/properties.json'
 
 export interface Property {
   id: string; title: string; listing: 'sale' | 'rent'; type: string; price: number
@@ -109,21 +111,11 @@ export const usePropertyStore = defineStore('properties', {
       if (this.loaded || this.loading) return
       this.loading = true
       this.error = ''
-      const MAX_RETRIES = 3
-      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-        try {
-          this.items = await $fetch<Property[]>('/data/properties.json')
-          this.loaded = true
-          this.error = ''
-          break
-        } catch (e) {
-          if (attempt < MAX_RETRIES) {
-            // Wait before retrying (600ms, 1200ms)
-            await new Promise(r => setTimeout(r, attempt * 600))
-          } else {
-            this.error = 'We could not load the property list. Please check your connection and try again.'
-          }
-        }
+      try {
+        this.items = JSON.parse(JSON.stringify(listingData)) as Property[] // own copy, never the shared module data
+        this.loaded = true
+      } catch {
+        this.error = 'We could not load the property list. Please reload the page and try again.'
       }
       this.loading = false
     },

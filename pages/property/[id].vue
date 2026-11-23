@@ -1,4 +1,5 @@
 <script setup lang="ts">
+definePageMeta({ key: r => r.fullPath })
 const route = useRoute()
 const router = useRouter()
 const store = usePropertyStore()
@@ -16,6 +17,9 @@ onMounted(() => {
 useHead({ title: computed(() => (p.value ? `${p.value.title} | BahayHub Butuan` : 'Property not found | BahayHub')) })
 watch(() => route.params.id, () => { active.value = 0 })
 
+const messageAgent = useMessageAgent()
+const creds = useCredentialStore()
+const agentVerified = computed(() => !!p.value && creds.isVerifiedName(p.value.agent.name))
 const saved = computed(() => !!p.value && store.saved.includes(p.value.id))
 function toggleSave() {
   if (!p.value) return
@@ -36,16 +40,16 @@ async function share() {
     <div v-if="!p" class="empty" style="margin:40px 0">
       <Icon name="empty" /><h2>We couldn’t find that property</h2>
       <p style="color:var(--muted)">It may have been removed or the link is incorrect.</p>
-      <NuxtLink to="/" class="btn btn-navy">Back to listings</NuxtLink>
+      <NuxtLink to="/browse" class="btn btn-navy">Back to listings</NuxtLink>
     </div>
     <template v-else>
-      <nav class="crumbs" aria-label="Breadcrumb"><NuxtLink to="/">Browse properties</NuxtLink><span>/</span><span>{{ p.title }}</span></nav>
+      <nav class="crumbs" aria-label="Breadcrumb"><NuxtLink to="/browse">Browse properties</NuxtLink><span>/</span><span>{{ p.title }}</span></nav>
       <div class="detail">
         <div style="min-width:0">
           <div class="gallery">
             <div class="main">
               <Transition name="fade" mode="out-in">
-                <img v-if="!bad[active]" ref="mainImg" :key="active" :src="p.images[active]" :alt="`${p.title} photo ${active + 1}`" @error="bad[active] = true" />
+                <img v-if="!bad[active]" ref="mainImg" :key="active" :src="p.images[active]" width="1000" height="625" fetchpriority="high" :alt="`${p.title} photo ${active + 1}`" @error="bad[active] = true" />
                 <div v-else :key="'b' + active" class="img-fallback"><Icon name="home" /></div>
               </Transition>
               <div class="badges"><span class="tagb" :class="p.listing">{{ p.listing === 'sale' ? 'For Sale' : 'For Rent' }}</span><span class="tagb" :class="p.status === 'available' ? 'ok' : 'warn'"><i />{{ p.status }}</span></div>
@@ -82,12 +86,13 @@ async function share() {
           <div class="panel">
             <div class="agent" style="margin-bottom:14px">
               <span class="avatar" style="width:44px;height:44px;font-size:14px" aria-hidden="true">{{ p.agent.initials }}</span>
-              <div><b style="font-size:15px">{{ p.agent.name }}</b><small>Contact unverified</small></div>
+              <div><NuxtLink :to="`/agents/${agentSlug(p.agent.name)}`" class="x-agent-link"><b style="font-size:15px">{{ p.agent.name }}</b></NuxtLink><small v-if="!agentVerified">Contact unverified</small><VerifiedBadge v-else /></div>
             </div>
+            <button v-if="auth.user?.role !== 'agent' && auth.user?.role !== 'admin'" class="btn btn-ghost" style="width:100%;justify-content:center;margin-bottom:14px" @click="messageAgent({ id: p.id, title: p.title })"><Icon name="mail" /> Message agent</button>
             <h2 style="font-size:19px;margin-bottom:14px">{{ p.cta === 'Join Waitlist' ? 'Join the waitlist' : 'Request a viewing' }}</h2>
             <InquiryForm :property-id="p.id" :title="p.title" />
           </div>
-          <div class="note-box"><Icon name="shield" /><div><b>Butuan City listings</b>Listing details only. Titles, contacts, and agent credentials are not verified.</div></div>
+          <div class="note-box"><Icon name="shield" /><div><b>Butuan City listings</b>Listing details only. Titles and contacts are not verified; agents with the PRC Verified badge had their license reviewed by an admin.</div></div>
         </aside>
       </div>
     </template>

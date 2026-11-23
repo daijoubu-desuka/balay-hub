@@ -5,120 +5,140 @@ useHead({
 })
 
 const router = useRouter()
+// stock photography (Unsplash); a navy panel shows if one fails to load
+const U = (id: string, w = 1000) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`
+const hide = (e: Event) => ((e.target as HTMLImageElement).style.visibility = 'hidden')
 
 const propertyTypes = [
   {
-    icon: '🏪', title: 'Shophouses & Retail', desc: 'Ground-floor retail units and shophouses along J.C. Aquino Ave, Montilla Blvd, and Villanueva Street. Ideal for restaurants, boutiques, and service businesses.',
-    features: ['High foot traffic locations', 'Flexible lease terms', 'Street-front exposure'], avgPrice: '₱15,000–₱60,000/mo'
+    title: 'Shophouses & Retail', img: U('photo-1441986300917-64674bd600d8'), alt: 'Bright retail shop interior with merchandise on display',
+    desc: 'Ground-floor retail units and shophouses along J.C. Aquino Ave, Montilla Blvd and Villanueva Street. Ideal for restaurants, boutiques and service businesses.',
+    features: ['High foot traffic', 'Flexible lease terms', 'Street-front exposure'], price: '₱15,000–₱60,000', unit: 'per month'
   },
   {
-    icon: '🏢', title: 'Office Spaces', desc: 'Professional office floors and executive suites in Butuan city central business district. Available on short-term and long-term lease.',
-    features: ['CBD locations', 'Furnished options available', 'Broadband-ready'], avgPrice: '₱8,000–₱35,000/mo'
+    title: 'Office Spaces', img: U('photo-1497366216548-37526070297c'), alt: 'Modern open-plan office with desks and large windows',
+    desc: 'Professional office floors and executive suites in the central business district, on short- or long-term lease.',
+    features: ['CBD locations', 'Furnished options', 'Broadband-ready'], price: '₱8,000–₱35,000', unit: 'per month'
   },
   {
-    icon: '🏭', title: 'Warehouses & Logistics', desc: 'Covered warehouses and open storage yards near the national highway and Bancasi Airport access roads. Suitable for logistics and distribution.',
-    features: ['Loading bay access', 'Near national highway', 'High-ceiling clearance'], avgPrice: '₱20,000–₱80,000/mo'
+    title: 'Warehouses & Logistics', img: U('photo-1586528116311-ad8dd3c8310d'), alt: 'Warehouse aisle with tall stocked shelving',
+    desc: 'Covered warehouses and open yards near the national highway and Bancasi Airport roads, suited to logistics and distribution.',
+    features: ['Loading bay access', 'Near the national highway', 'High ceiling clearance'], price: '₱20,000–₱80,000', unit: 'per month'
   },
   {
-    icon: '🌐', title: 'Commercial Lots', desc: 'Prime commercial lots for sale along Butuan major arterial roads. Zoned for mixed-use, retail, and light industrial development.',
-    features: ['Zoned for commercial use', 'Title transferable', 'Multiple lot sizes'], avgPrice: '₱5,000–₱25,000/sqm'
+    title: 'Commercial Lots', img: U('photo-1500382017468-9049fed747ef'), alt: 'Open land ready for development at golden hour',
+    desc: 'Prime lots for sale along Butuan’s arterial roads, zoned for mixed-use, retail and light industrial development.',
+    features: ['Zoned for commercial use', 'Transferable title', 'Multiple lot sizes'], price: '₱5,000–₱25,000', unit: 'per sqm'
   }
 ]
 
 const corridors = [
-  { name: 'J.C. Aquino Avenue', desc: 'Butuan main commercial spine. Highest foot traffic, anchored by banks, supermarkets, and government offices.', icon: '🛣️', tag: 'Prime' },
-  { name: 'Montilla Boulevard', desc: 'The emerging upscale corridor with new restaurant concepts, wellness centers, and professional services.', icon: '🏙️', tag: 'Trending' },
-  { name: 'Bancasi Road', desc: 'Near Bancasi Airport. Ideal for logistics hubs, cargo forwarding, and airport-adjacent services.', icon: '✈️', tag: 'Logistics' },
-  { name: 'National Highway (Ampayon)', desc: 'High-visibility highway frontage connecting Butuan to Davao. Best for fuel stations, fast food, and transport-related businesses.', icon: '🛤️', tag: 'Highway' }
+  { name: 'J.C. Aquino Avenue', tag: 'Prime', img: U('photo-1449824913935-59a10b8d2000', 700), desc: 'The main commercial spine. Highest foot traffic, anchored by banks, supermarkets and government offices.' },
+  { name: 'Montilla Boulevard', tag: 'Trending', img: U('photo-1477959858617-67f85cf4f1df', 700), desc: 'An upscale corridor with new restaurant concepts, wellness centers and professional services.' },
+  { name: 'Bancasi Road', tag: 'Logistics', img: U('photo-1436491865332-7a61a109cc05', 700), desc: 'Next to Bancasi Airport. Built for logistics hubs, cargo forwarding and airport services.' },
+  { name: 'National Highway, Ampayon', tag: 'Highway', img: U('photo-1469854523086-cc02fe5d8800', 700), desc: 'Highway frontage toward Davao. Best for fuel stations, fast food and transport businesses.' }
 ]
 
 const reasons = [
-  { icon: '📈', title: 'Growing Economy', desc: 'Butuan is the regional center of CARAGA, a rapidly developing market with consistent GDP growth.' },
-  { icon: '🚢', title: 'Trade Hub', desc: 'Strategic port access and the Bancasi Airport connect Butuan to Mindanao-wide commerce.' },
-  { icon: '🏗️', title: 'Infrastructure Boom', desc: 'Major road and bridge projects are expanding the city commercial reach beyond the city center.' },
-  { icon: '👥', title: 'Young Population', desc: 'A growing middle-class and young consumer base drives demand for retail, food, and professional services.' }
+  { icon: 'area', title: 'Growing economy', desc: 'Butuan is the regional center of Caraga, a fast-developing market with steady growth.' },
+  { icon: 'pin', title: 'Trade hub', desc: 'Port access and Bancasi Airport connect Butuan to commerce across Mindanao.' },
+  { icon: 'building', title: 'Infrastructure boom', desc: 'New roads and bridges are extending commercial reach beyond the city center.' },
+  { icon: 'user', title: 'Young population', desc: 'A growing middle class drives demand for retail, food and professional services.' }
 ]
 
-function browseCommercial() { router.push('/') }
-function browseType(title: string) { router.push({ path: '/', query: { q: title.split(' ')[0] } }) }
+const stats = [
+  { v: String(propertyTypes.length), l: 'Property types' },
+  { v: '12+', l: 'Active listings' },
+  { v: '₱8K', l: 'Leases from, per month' },
+  { v: String(corridors.length), l: 'Key business corridors' }
+]
+
+function browseCommercial() { router.push('/browse') }
+function browseType(title: string) { router.push({ path: '/browse', query: { q: title.split(' ')[0] } }) }
 </script>
 
 <template>
-  <div class="cm-page">
-    <section class="cm-hero">
-      <div class="wrap cm-hero-in">
-        <nav class="cm-crumb"><NuxtLink to="/">Home</NuxtLink><span>›</span><span>Commercial</span></nav>
-        <div class="cm-hero-content">
-          <div class="cm-hero-text">
-            <span class="cm-eyebrow">🏢 Butuan City · Commercial Real Estate</span>
-            <h1>Grow your business in Butuan commercial core.</h1>
-            <p>Shophouses, office spaces, warehouses, and prime commercial lots along Butuan City key business corridors — for sale and for lease.</p>
-            <div class="cm-hero-cta">
-              <button class="btn btn-orange btn-lg" @click="browseCommercial">Browse Commercial Listings →</button>
-              <a href="#types" class="btn btn-ghost btn-lg">Property Types ↓</a>
-            </div>
-          </div>
-          <div class="cm-hero-stats">
-            <div class="cm-stat"><strong>4</strong><span>Property Types</span></div>
-            <div class="cm-stat"><strong>12+</strong><span>Active Listings</span></div>
-            <div class="cm-stat"><strong>₱8K</strong><span>Lease from /mo</span></div>
-            <div class="cm-stat"><strong>4</strong><span>Key Corridors</span></div>
-          </div>
+  <div class="ph-page">
+    <section class="ph-hero">
+      <img :src="U('photo-1486406146926-c627a92ad1ab', 1800)" alt="" fetchpriority="high" @error="hide" />
+      <div class="wrap ph-hero-in">
+        <nav class="ph-crumb" aria-label="Breadcrumb"><NuxtLink to="/">Home</NuxtLink><span>/</span><span>Commercial</span></nav>
+        <p class="ph-eyebrow">Commercial real estate · Butuan City</p>
+        <h1>Grow your business in Butuan’s commercial core.</h1>
+        <p>Shophouses, office floors, warehouses and prime lots along the city’s busiest corridors — for sale and for lease.</p>
+        <div class="ph-hero-cta">
+          <a href="#types" class="btn btn-orange btn-lg">Explore property types</a>
+          <button class="btn btn-lg ph-btn-glass" @click="browseCommercial">Browse listings →</button>
         </div>
       </div>
     </section>
 
-    <section id="types" class="cm-section">
+    <div class="wrap">
+      <div class="ph-stats">
+        <div v-for="s in stats" :key="s.l"><b>{{ s.v }}</b><span>{{ s.l }}</span></div>
+      </div>
+    </div>
+
+    <section id="types" class="ph-section" style="scroll-margin-top:80px">
       <div class="wrap">
-        <div class="cm-section-head">
-          <h2>Commercial Property Types</h2>
-          <p>From ground-floor retail to warehouse logistics — explore what is available in Butuan commercial market.</p>
-        </div>
-        <div class="cm-types">
-          <div v-for="t in propertyTypes" :key="t.title" class="cm-type-card">
-            <div class="cm-type-icon">{{ t.icon }}</div>
-            <h3>{{ t.title }}</h3>
-            <p>{{ t.desc }}</p>
-            <ul>
-              <li v-for="f in t.features" :key="f">✓ {{ f }}</li>
-            </ul>
-            <div class="cm-type-footer">
-              <span class="cm-price-tag">{{ t.avgPrice }}</span>
-              <button class="btn btn-navy" @click="browseType(t.title)">Browse →</button>
-            </div>
+        <div class="ph-head">
+          <div>
+            <p class="ph-kicker">What’s available</p>
+            <h2>Commercial property types</h2>
+            <p>From ground-floor retail to warehouse logistics — what Butuan’s commercial market offers today.</p>
           </div>
+        </div>
+        <div class="ph-grid2">
+          <article v-for="(t, i) in propertyTypes" :key="t.title" v-reveal="i" class="ph-card ph-hcard">
+            <div class="ph-media"><img :src="t.img" :alt="t.alt" loading="lazy" @error="hide" /></div>
+            <div class="ph-body">
+              <h3>{{ t.title }}</h3>
+              <p class="ph-desc">{{ t.desc }}</p>
+              <ul class="ph-feats"><li v-for="f in t.features" :key="f"><Icon name="check" />{{ f }}</li></ul>
+              <div class="ph-foot">
+                <span class="ph-price"><small>Typical range</small>{{ t.price }} <span class="x-muted">{{ t.unit }}</span></span>
+                <button class="btn btn-navy btn-sm" @click="browseType(t.title)">Browse →</button>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="cm-section cm-corridor-section">
+    <section class="ph-section tint">
       <div class="wrap">
-        <div class="cm-section-head">
-          <h2>Key Business Corridors</h2>
-          <p>Location matters. Here are Butuan top commercial strips and what makes each one unique.</p>
+        <div class="ph-head">
+          <div>
+            <p class="ph-kicker">Location matters</p>
+            <h2>Key business corridors</h2>
+            <p>Butuan’s top commercial strips and what makes each one worth a look.</p>
+          </div>
         </div>
-        <div class="cm-corridors">
-          <div v-for="c in corridors" :key="c.name" class="cm-corridor-card">
-            <div class="cm-corridor-head">
-              <span class="cm-corridor-icon">{{ c.icon }}</span>
-              <span class="cm-corridor-tag">{{ c.tag }}</span>
+        <div class="ph-tiles">
+          <article v-for="(c, i) in corridors" :key="c.name" v-reveal="i" class="ph-tile">
+            <div class="ph-media">
+              <img :src="c.img" :alt="`${c.name}, Butuan City`" loading="lazy" @error="hide" />
+              <div class="ph-chips"><span class="ph-chip">{{ c.tag }}</span></div>
+              <div class="ph-on-photo"><b>{{ c.name }}</b></div>
             </div>
-            <h4>{{ c.name }}</h4>
             <p>{{ c.desc }}</p>
-          </div>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="cm-section">
+    <section class="ph-section">
       <div class="wrap">
-        <div class="cm-section-head">
-          <h2>Why Invest in Butuan?</h2>
-          <p>Butuan City is CARAGA regional center — a market on the rise with strong fundamentals for commercial investment.</p>
+        <div class="ph-head">
+          <div>
+            <p class="ph-kicker">The case for Butuan</p>
+            <h2>Why invest here</h2>
+            <p>Caraga’s regional center is a market on the rise, with strong fundamentals for commercial investment.</p>
+          </div>
         </div>
-        <div class="cm-reasons">
-          <div v-for="r in reasons" :key="r.title" class="cm-reason">
-            <div class="cm-reason-icon">{{ r.icon }}</div>
+        <div class="ph-reasons">
+          <div v-for="(r, i) in reasons" :key="r.title" v-reveal="i">
+            <Icon :name="r.icon" />
             <h4>{{ r.title }}</h4>
             <p>{{ r.desc }}</p>
           </div>
@@ -126,65 +146,15 @@ function browseType(title: string) { router.push({ path: '/', query: { q: title.
       </div>
     </section>
 
-    <section class="cm-cta-banner">
-      <div class="wrap cm-cta-in">
+    <section class="ph-cta">
+      <img :src="U('photo-1497366811353-6870744d04b2', 1800)" alt="" loading="lazy" @error="hide" />
+      <div class="wrap ph-cta-in">
         <div>
           <h2>Find your commercial space today.</h2>
-          <p>Browse all available commercial listings in Butuan City. Filter by type, location, and budget.</p>
+          <p>Browse every commercial listing in Butuan City and filter by type, location and budget.</p>
         </div>
-        <button class="btn btn-orange btn-lg" @click="browseCommercial">Browse Commercial Listings →</button>
+        <button class="btn btn-orange btn-lg" @click="browseCommercial">Browse commercial listings →</button>
       </div>
     </section>
   </div>
 </template>
-
-<style scoped>
-.cm-page { background: var(--surface, #f8f9fb); }
-.cm-hero { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; padding: 80px 0 60px; }
-.cm-hero-in { position: relative; z-index: 1; }
-.cm-crumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,.6); margin-bottom: 32px; }
-.cm-crumb a { color: rgba(255,255,255,.7); text-decoration: none; }
-.cm-crumb a:hover { color: #fff; }
-.cm-hero-content { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; }
-.cm-hero-text { flex: 1 1 380px; }
-.cm-eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .08em; color: #f59e4a; text-transform: uppercase; }
-.cm-hero-text h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.9rem, 4.5vw, 3rem); font-weight: 800; margin: 12px 0 16px; line-height: 1.15; color: #fff; }
-.cm-hero-text p { font-size: 1.05rem; color: rgba(255,255,255,.8); line-height: 1.7; max-width: 520px; }
-.cm-hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-.cm-hero-stats { display: flex; flex-wrap: wrap; gap: 16px; align-self: center; }
-.cm-stat { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15); backdrop-filter: blur(8px); border-radius: 16px; padding: 20px 28px; text-align: center; min-width: 110px; }
-.cm-stat strong { display: block; font-size: 2rem; font-weight: 800; color: #f59e4a; }
-.cm-stat span { font-size: 12px; color: rgba(255,255,255,.7); }
-.cm-section { padding: 72px 0; }
-.cm-corridor-section { background: #fff; }
-.cm-section-head { text-align: center; margin-bottom: 48px; }
-.cm-section-head h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; color: #0b2a4a; margin-bottom: 10px; }
-.cm-section-head p { color: #64748b; font-size: 1rem; max-width: 560px; margin: 0 auto; }
-.cm-types { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; justify-items: center; }
-.cm-type-card { background: #fff; border-radius: 20px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,.06); border: 1px solid #e2e8f0; transition: transform .2s, box-shadow .2s; display: flex; flex-direction: column; width: 100%; max-width: 360px; }
-.cm-type-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.1); }
-.cm-type-icon { font-size: 2.4rem; margin-bottom: 12px; }
-.cm-type-card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800; color: #0b2a4a; margin-bottom: 10px; }
-.cm-type-card p { font-size: .9rem; color: #64748b; line-height: 1.6; margin-bottom: 16px; flex: 1; }
-.cm-type-card ul { list-style: none; padding: 0; margin-bottom: 20px; display: flex; flex-direction: column; gap: 6px; }
-.cm-type-card li { font-size: .85rem; color: #475569; }
-.cm-type-footer { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f5f9; padding-top: 16px; }
-.cm-price-tag { font-size: .8rem; font-weight: 700; color: #0b2a4a; background: #f1f5f9; padding: 4px 10px; border-radius: 50px; }
-.cm-corridors { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-.cm-corridor-card { background: #f8f9fb; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; transition: border-color .2s; width: 260px; flex: 0 1 260px; }
-.cm-corridor-card:hover { border-color: #0b2a4a; }
-.cm-corridor-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.cm-corridor-icon { font-size: 1.8rem; }
-.cm-corridor-tag { font-size: 11px; font-weight: 700; color: #e05a1a; background: #fff3ed; padding: 3px 10px; border-radius: 50px; }
-.cm-corridor-card h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700; color: #0b2a4a; margin-bottom: 8px; }
-.cm-corridor-card p { font-size: .85rem; color: #64748b; line-height: 1.6; }
-.cm-reasons { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
-.cm-reason { background: #fff; border-radius: 16px; padding: 28px 20px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.05); width: 240px; flex: 0 1 240px; }
-.cm-reason-icon { font-size: 2.2rem; margin-bottom: 12px; }
-.cm-reason h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: #0b2a4a; margin-bottom: 8px; }
-.cm-reason p { font-size: .85rem; color: #64748b; line-height: 1.6; }
-.cm-cta-banner { background: linear-gradient(135deg, #1a1a2e, #0f3460); padding: 64px 0; }
-.cm-cta-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; }
-.cm-cta-banner h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; color: #fff; margin-bottom: 8px; }
-.cm-cta-banner p { color: rgba(255,255,255,.75); font-size: .95rem; }
-</style>

@@ -17,6 +17,7 @@ onMounted(() => {
 const pop = ref(false)
 const isSaved = computed(() => store.saved.includes(p.item.id))
 
+const creds = useCredentialStore()
 const iconFor = (f: string) => {
   const s = f.toLowerCase()
   if (s.includes('pool')) return 'pool'
@@ -44,7 +45,7 @@ function toggle() {
   <article class="card">
     <div class="card-media">
       <NuxtLink :to="`/property/${item.id}`" :aria-label="`View ${item.title}`" style="display:block;width:100%;height:100%">
-        <img v-if="!failed" ref="imgEl" :src="item.images[0]" :alt="`${item.title} in ${item.location}, Butuan City`" loading="lazy" @error="failed = true" />
+        <img v-if="!failed" ref="imgEl" :src="item.images[0]" width="1000" height="563" decoding="async" :alt="`${item.title} in ${item.location}, Butuan City`" loading="lazy" @error="failed = true" />
         <div v-else class="img-fallback"><Icon name="home" /></div>
       </NuxtLink>
       <div class="badges">
@@ -74,7 +75,7 @@ function toggle() {
       <div class="card-foot">
         <div class="agent">
           <span class="avatar" aria-hidden="true">{{ item.agent.initials }}</span>
-          <div><b>{{ item.agent.name }}</b><small>Contact unverified</small></div>
+          <div><NuxtLink :to="`/agents/${agentSlug(item.agent.name)}`" class="x-agent-link"><b>{{ item.agent.name }}</b></NuxtLink><VerifiedBadge v-if="creds.isVerifiedName(item.agent.name)" /><small v-else>Contact unverified</small></div>
         </div>
         <NuxtLink :to="`/property/${item.id}`" class="btn btn-sm" :class="item.cta ? 'btn-soft' : 'btn-navy'">{{ item.cta || 'View Details' }}</NuxtLink>
       </div>

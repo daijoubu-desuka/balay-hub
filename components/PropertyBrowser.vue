@@ -9,14 +9,6 @@ const q = route.query.q
 if (typeof q === 'string') store.filters.query = q
 await useAsyncData('properties', async () => { await store.load(); return true })
 
-// Auto-recover from cold-start SSR failure without user needing to refresh
-onMounted(async () => {
-  if (!store.loaded && !store.loading) {
-    await new Promise(r => setTimeout(r, 300))
-    await store.retry()
-  }
-})
-
 watch(() => store.filters, () => { store.page = 1 }, { deep: true })
 watch(() => store.sort, () => { store.page = 1 })
 watch(() => ui.filterDrawer, v => { if (import.meta.client) document.body.style.overflow = v ? 'hidden' : '' })
